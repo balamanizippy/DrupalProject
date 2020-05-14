@@ -1,5 +1,5 @@
 resource "aws_launch_configuration" "LC" {
-  image_id = "ami-0323c3dd2da7fb37d"
+  image_id = var.image
   instance_type = var.instance_type
   security_groups = [ aws_security_group.AppserverSG.id ]
   iam_instance_profile = aws_iam_instance_profile.test_profile.name
