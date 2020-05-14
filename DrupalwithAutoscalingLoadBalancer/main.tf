@@ -32,7 +32,7 @@ iam_instance_profile = aws_iam_instance_profile.test_profile.name
 key_name = var.key
 user_data = data.template_file.Appserver1.rendered
 get_password_data = "false"
-availability_zone = "us-east-2a"
+availability_zone = "us-east-2b"
 security_groups = [aws_security_group.AppserverSG.id]
 associate_public_ip_address = true
 root_block_device {
