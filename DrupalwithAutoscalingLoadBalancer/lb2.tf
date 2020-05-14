@@ -22,8 +22,8 @@ data "template_file" "LC" {
 resource "aws_autoscaling_group" "ASG" {
   launch_configuration = aws_launch_configuration.LC.id
   vpc_zone_identifier = [ aws_subnet.Publicsubnet1.id,aws_subnet.Publicsubnet2.id ]
-  min_size = 2
-  max_size = 3
+  min_size = var.minValue
+  max_size = var.maxValue
   tags = [
 {
     key = "Name"
