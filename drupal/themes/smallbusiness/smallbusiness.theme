@@ -1,0 +1,142 @@
+<?php
+/**
+ * @file
+ * Functions to support theming in the smallbusiness.
+ */
+define('THEME_PATH', base_path() . drupal_get_path('theme', 'smallbusiness'));
+// Change the value to increase the slideshow.
+define('SLIDESHOW_COUNT', 5);
+
+use Drupal\Component\Utility\SafeMarkup;
+use Drupal\Component\Utility\Xss;
+use Drupal\Core\Template\Attribute;
+use Drupal\file\Plugin\Core\Entity\FileInterface;
+
+/**
+ * Override or insert variables into the page template.
+ */
+function smallbusiness_preprocess_page(&$vars) {
+  
+  // Add information about the number of sidebars.
+  if (!empty($vars['page']['sidebar_first']) && !empty($vars['page']['sidebar_second'])) {
+    $vars['conditionalStr'] = 'col-md-6 col-sm-6';
+    $vars['sidebarfirst'] = 'col-md-3 col-sm-3';
+    $vars['sidebarsecond'] = 'col-md-3 col-sm-3';
+  }
+
+  elseif (!empty($vars['page']['sidebar_first'])) {
+    $vars['conditionalStr'] = 'col-md-8 col-sm-8 ';
+    $vars['sidebarfirst'] = 'col-md-4 col-sm-4';
+  }
+
+  elseif (!empty($vars['page']['sidebar_second'])) {
+    $vars['conditionalStr'] = 'col-md-8 sol-sm-8 ';
+    $vars['sidebarsecond'] = 'col-md-4 col-sm-4';
+  }
+
+  else {
+    $vars['conditionalStr'] = 'col-lg-12  centered ';
+  }
+  // Slide show
+  $show_slideshow = theme_get_setting('slideshow_display', 'smallbusiness');
+  if ($vars['is_front'] && $show_slideshow) {
+    $vars['slider'] = array();
+    for ($i = 1; $i <= SLIDESHOW_COUNT; $i++) {
+      $fid = theme_get_setting("slide_image_{$i}", "smallbusiness");
+      $file = file_load($fid[0]);
+      if (!empty($file)) {
+        $uri = $file->getFileUri();
+        $image_path = file_create_url($uri);
+      }
+      else {
+        $image_path = THEME_PATH . "/images/slider_img{$i}.jpg";
+      }
+      $vars['slider'][] = array(
+        'url' => theme_get_setting("slide_url_{$i}", "smallbusiness"),
+        'src' => $image_path,
+        'title' => theme_get_setting("slide_title_{$i}", "smallbusiness"),
+      );
+    }
+  }
+  
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ *
+ * @param $form
+ *   The form.
+ * @param $form_state
+ *   The form state.
+ */
+function smallbusiness_form_system_theme_settings_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state) {
+
+$form['busi_settings']['slideshow'] = array(
+    '#type' => 'details',
+    '#title' => t('Front Page Slideshow'),
+    '#collapsible' => TRUE,
+    '#collapsed' => FALSE,
+  );
+  $form['busi_settings']['slideshow']['slideshow_display'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Show slideshow'),
+    '#default_value' => theme_get_setting('slideshow_display', 'smallbusiness'),
+    '#description'   => t("Check this option to show Slideshow in front page. Uncheck to hide."),
+  );
+  $form['busi_settings']['slideshow']['slide'] = array(
+    '#markup' => t('You can change the title, url and image of each slide in the following Slide Setting fieldsets.'),
+  );
+  
+  for ($i = 1; $i <= SLIDESHOW_COUNT; $i++) {
+    $form['busi_settings']['slideshow']['slide' . $i] = array(
+      '#type' => 'details',
+      '#title' => t('Slide '.$i),
+      '#collapsible' => TRUE,
+      '#collapsed' => TRUE,
+    );
+    $form['busi_settings']['slideshow']['slide' . $i]['slide_title_' . $i] = array(
+      '#type' => 'textfield',
+      '#title' => t('Slide '.$i.' Title'),
+      '#default_value' => theme_get_setting("slide_title_{$i}", "smallbusiness"),
+    );
+    $form['busi_settings']['slideshow']['slide' . $i]['slide_image_' . $i] = array(
+      '#type' => 'managed_file',
+      '#title' => t('Slide '.$i.' Image'),
+      '#description' => t('Use same size for all the slideshow images(Recommented size : 1920 X 603).'),
+      '#default_value' => theme_get_setting("slide_image_{$i}", "smallbusiness"),
+      '#upload_location' => 'public://',
+    );
+    $form['busi_settings']['slideshow']['slide' . $i]['slide_url_' . $i] = array(
+      '#type' => 'textfield',
+      '#title' => t('Slide '.$i.' URL'),
+      '#default_value' => theme_get_setting("slide_url_{$i}", "smallbusiness"),
+    );
+  }
+  
+  // Custom submit to save the file permenant.
+  $form['#submit'][] = 'smallbusiness_settings_form_submit';
+
+}
+
+
+/**
+ * Custom submit handler for integrity settings form.
+ */
+function smallbusiness_settings_form_submit(&$form, \Drupal\Core\Form\FormStateInterface $form_state) {
+
+  $account = \Drupal::currentUser();
+  $values = $form_state->getValues();
+  for ($i = 0; $i <= SLIDESHOW_COUNT; $i++) {
+    if (isset($values["slide_image_{$i}"]) && !empty($values["slide_image_{$i}"])) {
+      // Load the file via file.fid.
+      $file = file_load($values["slide_image_{$i}"][0]);
+      // Change status to permanent.
+      $file->setPermanent();
+      $file->save();
+      $file_usage = \Drupal::service('file.usage');
+      $file_usage->add($file, 'user', 'user', $account->id());
+    }
+  }
+
+
+}

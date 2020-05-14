@@ -1,0 +1,51 @@
+name: 'Small Business Theme'
+type: theme
+base theme: classy
+description: 'Small Business is a premium Drupal 8 theme.'
+# core: 8.x
+libraries:
+  - smallbusiness/bootstrap-lib
+  - smallbusiness/global-css
+
+# Regions
+regions:
+  header: Header
+  secondary_menu: 'Secondary menu'
+  breadcrumb: Breadcrumb  
+  highlighted: Highlighted
+  feature_box1: Featured box 1
+  feature_box2: Featured box 2
+  feature_box3: Featured box 3
+  content_top: Content Top
+  help: Help
+  content: Content
+  sidebar_first: First Sidebar
+  sidebar_second: Second Sidebar
+  footer_first: 'Footer first'
+  footer_second: 'Footer second'
+  footer_third: 'Footer third'
+  footer_fourth: 'Footer fourth'
+  footer: 'Footer'
+
+# Features
+features:
+  - 'logo'
+  - 'name'
+  - 'slogan'
+  - 'node_user_picture'
+  - 'comment_user_picture'
+  - 'comment_user_verification'
+  - 'favicon'
+  - 'main_menu'
+  - 'secondary_menu'
+# Information added by Drupal.org packaging script on 2017-04-20
+# version: '8.x-1.1-dev'
+# core: '8.x'
+# project: 'smallbusiness'
+# datestamp: 1492702445
+
+# Information added by Drupal.org packaging script on 2017-09-18
+version: '8.x-1.31'
+core: '8.x'
+project: 'smallbusiness'
+datestamp: 1505715251
