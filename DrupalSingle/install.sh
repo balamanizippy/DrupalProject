@@ -10,7 +10,7 @@ sudo echo "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDlvu4zNd+Ng4K5twKW3iaxvxXXD4pZ8
 chmod 700 /home/ec2-user/.ssh
 chmod 640 /home/ec2-user/.ssh/authorized_keys
 sleep 5
-sudo yum update -y
+
 sudo amazon-linux-extras install epel -y
 
 sudo yum install git -y
