@@ -7,9 +7,6 @@ variable "security_key" {
 variable "aws_region" {
     default = "us-east-1"
 }
-variable "privateec2_ip" {
-    default = "10.0.0.5"
-}
 variable "image" {
     description = "instance images"
     default     = "ami-0323c3dd2da7fb37d"
