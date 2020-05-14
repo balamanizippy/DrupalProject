@@ -32,8 +32,8 @@ cd /var/www/html/
 sudo mv drupal-8.8.5 drupal
 sleep 5
 cd /home/ec2-user
-git clone -b sourcecode https://github.com/mohamedzoheb/DrupalProject.git
-cd /home/ec2-user/drupal3
+git clone -b sourcecode https://github.com/1996karthick/DrupalProject.git
+cd /home/ec2-user/DrupalProject
 yes | cp -Rf drupal /var/www/html/
 sudo systemctl restart httpd
 
@@ -47,7 +47,7 @@ endpoint=$(<file)
 echo $endpoint
 
 sed -i "s/localhost/$endpoint/g" /var/www/html/drupal/sites/default/settings.php
-cd /home/ec2-user/drupal3
+cd /home/ec2-user/DrupalProject
 mysql -u zippyops -pzippyops -h $endpoint zippyops_db < zippyops_db.sql
 sudo systemctl restart httpd
 
