@@ -25,7 +25,7 @@ tags = {
 }
 
 resource "aws_instance" "Appserver1" {
-ami = var.image
+ami = "ami-0323c3dd2da7fb37d"
 instance_type = var.instance_type
 subnet_id = aws_subnet.Publicsubnet1.id
 iam_instance_profile = aws_iam_instance_profile.test_profile.name
@@ -52,7 +52,7 @@ data "template_file" "Appserver1" {
 }
 
 resource "aws_instance" "Appserver2" {
-ami = var.image
+ami = "ami-0323c3dd2da7fb37d"
 instance_type = var.instance_type
 subnet_id = aws_subnet.Publicsubnet2.id
 iam_instance_profile = aws_iam_instance_profile.test_profile.name
