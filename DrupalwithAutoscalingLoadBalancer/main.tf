@@ -123,6 +123,7 @@ tags = {
 }
 }
 
+
 resource "aws_security_group" "AppserverSG" {
 vpc_id = aws_vpc.MyVPC.id
 ingress {
@@ -144,7 +145,7 @@ ingress {
       protocol = "tcp"
       self  = true
       from_port = 80
-      to_port = 80 
+      to_port = 80
       cidr_blocks = ["0.0.0.0/0"]
         }
 
@@ -174,7 +175,7 @@ storage_type = "gp2"
 engine = "mysql"
 engine_version = "5.7"
 instance_class = "db.t2.micro"
-name = "zippyops_db"
+name = "zippyops"
 username = "zippyops"
 password = "zippyops"
 availability_zone = "us-east-1a"
@@ -247,7 +248,7 @@ tags = {
 }
 
 resource "aws_db_subnet_group" "DBSubnetgroup" {
-name = "rdssg"
+name = "rdssg2"
 subnet_ids = [aws_subnet.Publicsubnet1.id, aws_subnet.Publicsubnet2.id, aws_subnet.Privatesubnet1.id,aws_subnet.Privatesubnet2.id] 
 
 tags = {
