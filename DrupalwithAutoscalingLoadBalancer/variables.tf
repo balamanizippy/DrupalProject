@@ -5,11 +5,11 @@ variable "security_key" {
     default = "password"
 }
 variable "aws_region" {
-    default = "us-east-1"
+    default = "us-west-2"
 }
 variable "image" {
     description = "instance images"
-    default     = "ami-0323c3dd2da7fb37d"
+    default     = "ami-0d6621c01e8c2de2c"
 }
 variable "instance_type" {
     description = "instance type"
@@ -17,7 +17,7 @@ variable "instance_type" {
 }
 variable "key" {
     description = "instance key name"
-    default     = "karthinv"
+    default     = "drupaloregon"
 }
 variable "size" {
     description = "instance size"
