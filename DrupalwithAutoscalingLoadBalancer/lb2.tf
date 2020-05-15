@@ -1,7 +1,7 @@
 resource "aws_launch_configuration" "LC" {
   image_id = var.image
   instance_type = var.instance_type
-  security_groups = [ aws_security_group.AppserverSG.id ]
+  security_groups = [aws_security_group.AppserverSG.id]
   iam_instance_profile = aws_iam_instance_profile.test_profile.name
   key_name = var.key
   associate_public_ip_address = true
@@ -60,7 +60,7 @@ resource "aws_lb" "alb" {
   idle_timeout    = 60   
   tags = {    
     Name    = "alb"    
-  }   
+  }  
   provisioner "local-exec" {
     command = "echo ${aws_lb.alb.dns_name} >> /var/lib/jenkins/workspace/DrupalMultiChoice/publicip"
 }
@@ -107,7 +107,7 @@ resource "aws_autoscaling_attachment" "alb_autoscale" {
 
 resource "aws_lb_listener" "alb_listener" {  
   load_balancer_arn = aws_lb.alb.arn  
-  port              = 80  
+  port              = 80 
   protocol          = "HTTP"
   
   default_action {    
@@ -116,7 +116,7 @@ resource "aws_lb_listener" "alb_listener" {
   }
 }
 resource "aws_iam_role" "test_role" {
-  name = "test_role2"
+  name = "test_roles"
 
   assume_role_policy = <<EOF
 {
@@ -139,11 +139,11 @@ EOF
   }
 }
 resource "aws_iam_instance_profile" "test_profile" {
-  name = "test_profile2"
+  name = "test_profiles"
   role = aws_iam_role.test_role.name
 }
 resource "aws_iam_role_policy" "test_policy" {
-  name = "test_policy2"
+  name = "test_policies"
   role = aws_iam_role.test_role.id
 
   policy = <<EOF
@@ -161,4 +161,3 @@ resource "aws_iam_role_policy" "test_policy" {
 }
 EOF
 }
-
