@@ -23,7 +23,6 @@ variable "size" {
     description = "instance size"
     default     = "10"
 }
-
 variable "minValue" {
     description = "autoscaling minimum value"
     default     = "1"
