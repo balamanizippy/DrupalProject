@@ -121,10 +121,10 @@ resource "aws_instance" "web1" {
         Terraform = true
     }
     provisioner "local-exec" {
-         command = "echo ${aws_instance.web1.public_ip} >> /var/lib/jenkins/workspace/DrupalMultiChoice/publicip"
+         command = "echo ${aws_instance.web1.public_ip} >> /var/lib/jenkins/workspace/Drupalmulti/publicip"
     }
      provisioner "local-exec" {
-         command = "echo ${aws_instance.web1.private_ip} >> /var/lib/jenkins/workspace/DrupalMultiChoice/privateip"
+         command = "echo ${aws_instance.web1.private_ip} >> /var/lib/jenkins/workspace/Drupalmulti/privateip"
     }
 }
 data "template_file" "web1" {
@@ -217,7 +217,7 @@ resource "aws_instance" "db1" {
         Terraform = true
     }
     provisioner "local-exec" {
-         command = "echo ${aws_instance.db1.private_ip} >> /var/lib/jenkins/workspace/DrupalMultiChoice/privateip2"
+         command = "echo ${aws_instance.db1.private_ip} >> /var/lib/jenkins/workspace/Drupalmulti/privateip2"
     }
 }
 data "template_file" "db1" {
