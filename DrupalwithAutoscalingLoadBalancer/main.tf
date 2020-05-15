@@ -44,7 +44,7 @@ tags =  {
        Name = "Appserver1"
      }
 provisioner "local-exec" {
-    command = "echo ${aws_instance.Appserver1.public_ip} >> /var/lib/jenkins/workspace/DrupalMultiChoice/publicip1"
+    command = "echo ${aws_instance.Appserver1.public_ip} >> /var/lib/jenkins/workspace/Drupalmulti/publicip1"
 }
 }
 data "template_file" "Appserver1" {
@@ -71,7 +71,7 @@ tags =  {
        Name = "Appserver2"
      }
 provisioner "local-exec" {
-    command = "echo ${aws_instance.Appserver2.public_ip} >> /var/lib/jenkins/workspace/DrupalMultiChoice/publicip2"
+    command = "echo ${aws_instance.Appserver2.public_ip} >> /var/lib/jenkins/workspace/Drupalmulti/publicip2"
 }
 }
 data "template_file" "Appserver2" {
@@ -187,7 +187,7 @@ db_subnet_group_name = aws_db_subnet_group.DBSubnetgroup.id
 vpc_security_group_ids = [aws_security_group.DBSG.id]
 
   provisioner "local-exec" {
-    command = "echo ${aws_db_instance.RDS.address} >> /var/lib/jenkins/workspace/DrupalMultiChoice/endpoint"
+    command = "echo ${aws_db_instance.RDS.address} >> /var/lib/jenkins/workspace/Drupalmulti/endpoint"
 }
 }
 
