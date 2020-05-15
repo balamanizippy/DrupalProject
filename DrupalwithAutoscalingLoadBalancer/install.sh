@@ -35,6 +35,7 @@ cd /home/ec2-user
 git clone -b sourcecode https://github.com/1996karthick/DrupalProject.git
 cd /home/ec2-user/DrupalProject
 yes | cp -Rf drupal /var/www/html/
+sleep 5
 sudo systemctl restart httpd
 
 cd /home/ec2-user
@@ -45,10 +46,11 @@ sed -i 's/"//g' /home/ec2-user/file
 sed -i 's/ //g' /home/ec2-user/file
 endpoint=$(<file)
 echo $endpoint
-
+sleep 5
 sed -i "s/localhost/$endpoint/g" /var/www/html/drupal/sites/default/settings.php
 cd /home/ec2-user/DrupalProject
 mysql -u zippyops -pzippyops -h $endpoint zippyops_db < zippyops_db.sql
+sleep 5
 sudo systemctl restart httpd
 
 
