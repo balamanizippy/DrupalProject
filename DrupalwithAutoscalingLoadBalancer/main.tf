@@ -9,7 +9,7 @@ tags =  {
 resource "aws_subnet" "Publicsubnet1" {
         vpc_id = aws_vpc.MyVPC.id
         cidr_block = "10.0.0.0/24"
-        availability_zone = "us-east-2a"
+        availability_zone = "us-east-1a"
 tags = {
         Name = "Subnets"
        }
@@ -18,7 +18,7 @@ tags = {
 resource "aws_subnet" "Publicsubnet2" {
         vpc_id = aws_vpc.MyVPC.id
         cidr_block = "10.0.4.0/24"
-        availability_zone = "us-east-2b"
+        availability_zone = "us-east-1b"
 tags = {
         Name = "Subnets"
      }
@@ -32,7 +32,7 @@ iam_instance_profile = aws_iam_instance_profile.test_profile.name
 key_name = var.key
 user_data = data.template_file.Appserver1.rendered
 get_password_data = "false"
-availability_zone = "us-east-2b"
+availability_zone = "us-east-1a"
 security_groups = [aws_security_group.AppserverSG.id]
 associate_public_ip_address = true
 root_block_device {
@@ -59,7 +59,7 @@ iam_instance_profile = aws_iam_instance_profile.test_profile.name
 key_name = var.key
 user_data = data.template_file.Appserver2.rendered
 get_password_data = "false"
-availability_zone = "us-east-2a"
+availability_zone = "us-east-1b"
 security_groups = [aws_security_group.AppserverSG.id]
 associate_public_ip_address = true
 root_block_device {
@@ -177,7 +177,7 @@ instance_class = "db.t2.micro"
 name = "zippyops_db"
 username = "zippyops"
 password = "zippyops"
-availability_zone = "us-east-2a"
+availability_zone = "us-east-1a"
 backup_retention_period = "7"
 backup_window = "00:05-00:35"
 skip_final_snapshot = true
@@ -200,7 +200,7 @@ output "rds_link" {
 resource "aws_subnet" "Privatesubnet1" {
          vpc_id = aws_vpc.MyVPC.id
          cidr_block = "10.0.1.0/24"
-         availability_zone = "us-east-2c"
+         availability_zone = "us-east-1c"
 tags = {
         Name = "Subnets"
      }
@@ -209,7 +209,7 @@ tags = {
 resource "aws_subnet" "Privatesubnet2" {
          vpc_id = aws_vpc.MyVPC.id
          cidr_block = "10.0.5.0/24"
-         availability_zone = "us-east-2c"
+         availability_zone = "us-east-1d"
 tags = {
         Name = "Subnets"
      }
