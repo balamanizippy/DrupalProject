@@ -17,7 +17,7 @@ variable "instance_type" {
 }
 variable "key" {
     description = "instance key name"
-    default     = "drupalkarthi"
+    default     = "karthinv"
 }
 variable "size" {
     description = "instance size"
