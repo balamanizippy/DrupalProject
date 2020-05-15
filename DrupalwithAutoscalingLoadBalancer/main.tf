@@ -1,5 +1,5 @@
 resource "aws_vpc" "MyVPC" {
-         cidr_block = "10.0.0.0/20"
+         cidr_block = "11.0.0.0/20"
 enable_dns_hostnames = "true"
 tags =  {
          Name = "VPC"
@@ -8,7 +8,7 @@ tags =  {
 
 resource "aws_subnet" "Publicsubnet1" {
         vpc_id = aws_vpc.MyVPC.id
-        cidr_block = "10.0.0.0/24"
+        cidr_block = "11.0.0.0/24"
         availability_zone = "us-west-2a"
 tags = {
         Name = "Subnets"
@@ -17,7 +17,7 @@ tags = {
 
 resource "aws_subnet" "Publicsubnet2" {
         vpc_id = aws_vpc.MyVPC.id
-        cidr_block = "10.0.4.0/24"
+        cidr_block = "11.0.4.0/24"
         availability_zone = "us-west-2b"
 tags = {
         Name = "Subnets"
@@ -200,7 +200,7 @@ output "rds_link" {
 
 resource "aws_subnet" "Privatesubnet1" {
          vpc_id = aws_vpc.MyVPC.id
-         cidr_block = "10.0.1.0/24"
+         cidr_block = "11.0.1.0/24"
          availability_zone = "us-west-2c"
 tags = {
         Name = "Subnets"
@@ -209,7 +209,7 @@ tags = {
 
 resource "aws_subnet" "Privatesubnet2" {
          vpc_id = aws_vpc.MyVPC.id
-         cidr_block = "10.0.5.0/24"
+         cidr_block = "11.0.5.0/24"
          availability_zone = "us-west-2d"
 tags = {
         Name = "Subnets"
