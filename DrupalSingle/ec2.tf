@@ -18,7 +18,7 @@ resource "aws_instance" "Drupal" {
    Name        = "Drupal"
    }
 provisioner "local-exec" {
-    command = "echo ${aws_instance.Drupal.public_ip} >> /var/lib/jenkins/workspace/DrupalMultiChoice/publicip"
+    command = "echo ${aws_instance.Drupal.public_ip} >> /var/lib/jenkins/workspace/Drupalmulti/publicip"
 }
 
 
@@ -75,7 +75,7 @@ resource "aws_security_group" "sg" {
    }
    
  tags = {
-   Name        = "karthi-sg"
+   Name        = "security group"
   }
 }
 
