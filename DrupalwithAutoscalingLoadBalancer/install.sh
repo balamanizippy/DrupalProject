@@ -39,7 +39,7 @@ sleep 5
 sudo systemctl restart httpd
 
 cd /home/ec2-user
-endpoint=`aws rds --region us-east-1 describe-db-instances --query "DBInstances[*].Endpoint.Address"`
+endpoint=`aws rds --region us-west-2 describe-db-instances --query "DBInstances[*].Endpoint.Address"`
 echo >file $endpoint
 sed -i 's/[][]//g' /home/ec2-user/file
 sed -i 's/"//g' /home/ec2-user/file
