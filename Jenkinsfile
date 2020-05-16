@@ -6,50 +6,64 @@ pipeline {
     }
 
     stages {
-        stage('Terraform Destroy') {
+          stage('Terraform Destroy') {
             steps {
-                sh 'terraform destroy -auto-approve'
-                sh "rm -rf /${WORKSPACE}/*"
+                script {
+			      instance="${params.Terraform_Destroy}"
+                  if ("$instance" == "Yes"){
+                        sh 'terraform destroy -auto-approve'
+                        sh label: '', script: '''rm -rf ${WORKSPACE}/*'''
+                }
+                else{
+                    sh 'echo "Run with same code!!!"'
+                }
+              }
             }
         }
         stage('terraform clone') {
             steps {
-                checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '1b73007b-953c-49db-95ca-2635f9fcc461', url: 'https://github.com/mohamedzoheb/Drupalproject.git']]])
+                  checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '7a67154e-41ab-4ad9-9cb2-1e35ed6698aa', url: 'https://github.com/1996karthick/DrupalProject.git']]])
             }
         }
         stage('Success Message'){
             steps {
                script {
-			      instance="${params.Instance}"
-			          if ("$instance" == "Single"){
-                            sh "rm -rf DrupalwithAutoscalingLoadBalancer DrupalwithEC2&MariaDB DrupalwithEC2&RDS"
-                            sh "mv /var/lib/jenkins/workspace/DrupalMultiChoice/DrupalSingle/* /var/lib/jenkins/workspace/DrupalMultiChoice"
+			      instance="${params.Environment}"
+			          if ("$instance" == "SingleServer"){
+                            sh "rm -rf DrupalwithAutoscalingLoadBalancer DrupalwithEC2_MariaDB DrupalwithEC2_RDS"
+                            sh "mv ${WORKSPACE}/DrupalSingle/* ${WORKSPACE}"
                             sh 'echo "Everything is Perfect, Go Ahead for Singleserver!!!"'
                       }
-					  else if ("$instance" == "MultiServer_with_PrivateEC2db"){
-                            sh "rm -rf DrupalwithAutoscalingLoadBalancer DrupalSingle DrupalwithEC2&RDS"
-                            sh "mv /var/lib/jenkins/workspace/DrupalMultiChoice/DrupalwithEC2&MariaDB/* /var/lib/jenkins/workspace/DrupalMultiChoice"
+					  else if ("$instance" == "MultiServer_with_MariaDB"){
+                            sh "rm -rf DrupalwithAutoscalingLoadBalancer DrupalSingle DrupalwithEC2_RDS"
+                            sh "mv ${WORKSPACE}/DrupalwithEC2_MariaDB/* ${WORKSPACE}"
 		                    sh 'echo "Everything is Perfect, Go Ahead for Multiserver_with_PrivateEC2db!!!"'
 		              }
-                      else if ("$instance" == "MultiServer_With_RDS"){
-                            sh "rm -rf DrupalwithAutoscalingLoadBalancer DrupalwithEC2&MariaDB DrupalSingle"
-                            sh "mv /var/lib/jenkins/workspace/DrupalMultiChoice/DrupalwithEC2&RDS/* /var/lib/jenkins/workspace/DrupalMultiChoice"
+                      else if ("$instance" == "MultiServer_with_RDS"){
+                            sh "rm -rf DrupalwithAutoscalingLoadBalancer DrupalwithEC2_MariaDB DrupalSingle"
+                            sh "mv ${WORKSPACE}/DrupalwithEC2_RDS/* ${WORKSPACE}"
 		                    sh 'echo "Everything is Perfect, Go Ahead for Multiserver_With_RDS!!!"'
 		              }
-                      else {
-                            sh "rm -rf DrupalSingle DrupalwithEC2&MariaDB DrupalwithEC2&RDS"
-                            sh "mv /var/lib/jenkins/workspace/DrupalMultiChoice/DrupalwithAutoscalingLoadBalancer/* /var/lib/jenkins/workspace/DrupalMultiChoice"
-		                    sh 'echo "Everything is Perfect, Go Ahead for MultiServer_with_AutoScaling&Loadbalancer!!!"'
+                      else if ("$instance" == "MultiServer_with_AS_ALB"){
+                            sh "rm -rf DrupalSingle DrupalwithEC2_MariaDB DrupalwithEC2_RDS"
+                            sh "mv ${WORKSPACE}/DrupalwithAutoscalingLoadBalancer/* ${WORKSPACE}"
+		                    sh label: '', script: ''' sed -i \"s/2/$Autoscaling_Max_Value/g\" ${WORKSPACE}/variables.tf
+                            sed -i \"s/1/$Autoscaling_Min_Value/g\" ${WORKSPACE}/variables.tf
+                            '''
+							sh 'echo "Everything is Perfect, Go Ahead for MultiServer_with_AutoScaling&Loadbalancer!!!"'
+		              }
+					  else {
+		                  sh 'echo "Something went Wrong!!!"'
 		              }
                 }
                   }
             }
         stage('Parameters'){
             steps {
-                sh label: '', script: ''' sed -i \"s/user/$Access_key/g\" /${WORKSPACE}/variables.tf
-                sed -i \"s/password/$Secret_key/g\" /${WORKSPACE}/variables.tf
-                sed -i \"s/t2.micro/$Instance_type/g\" /${WORKSPACE}/variables.tf
-                sed -i \"s/10/$Instance_size/g\" /${WORKSPACE}/variables.tf
+                sh label: '', script: ''' sed -i \"s/user/$Access_key/g\" ${WORKSPACE}/variables.tf
+                sed -i \"s/password/$Secret_key/g\" ${WORKSPACE}/variables.tf
+                sed -i \"s/t2.micro/$Instance_type/g\" ${WORKSPACE}/variables.tf
+                sed -i \"s/10/$Instance_size/g\" ${WORKSPACE}/variables.tf
                 '''
                 }
             }
@@ -67,12 +81,12 @@ pipeline {
          stage('terraform apply') {
             steps {
                 sh 'terraform apply -auto-approve'
-                sleep 210
+                
             }
         } 
         stage("git checkout") {
 	     steps {
-		    checkout([$class: 'GitSCM', branches: [[name: '*/branchPy']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'djangocodebase']], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '7e261af1-1211-4b5a-9478-675cac127cce', url: 'https://github.com/GodsonSibreyan/Godsontf.git']]])
+		       checkout([$class: 'GitSCM', branches: [[name: '*/sourcecode']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'drupalcodebase']], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '7a67154e-41ab-4ad9-9cb2-1e35ed6698aa', url: 'https://github.com/1996karthick/DrupalProject.git']]])
            }
         }
 		
@@ -105,17 +119,29 @@ pipeline {
 			dependencyCheckPublisher pattern: ''
         }
         archiveArtifacts allowEmptyArchive: true, artifacts: '**/dependency-check-report.xml', onlyIfSuccessful: true
+        sleep 300
         }
+        }
+         stage('ClamAV') {
+	    parallel {
+	      stage('Scan') {
+	        steps {
+	         script {
+                build job: 'Drupalmulti_Clamav', wait: false
+             } 
+	        }
+	      }
+	    }
         }
         stage('Deployment'){
             steps {
                script {
-			      instance="${params.Instance}"
-			          if ("$instance" == "Single"){
+			      instance="${params.Environment}"
+			          if ("$instance" == "SingleServer"){
                             sh label: '', script: '''pubIP=$(<publicip)
                             echo "$pubIP"
                             ssh -tt -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ec2-user@$pubIP /bin/bash << EOF
-                            git clone -b sourcecode https://github.com/mohamedzoheb/DrupalProject.git
+                            git clone -b sourcecode https://github.com/1996karthick/DrupalProject.git
 							sleep 5
                             sudo /bin/su - root
                             sleep 5
@@ -130,7 +156,7 @@ pipeline {
 							'''
                             sh 'echo "Application Deployed, Go Ahead for VAPT,OWASP,LinkChecker,SpeedTest!!!"'
                       }
-					  else if ("$instance" == "MultiServer_with_PrivateEC2db"){
+					  else if ("$instance" == "MultiServer_with_MariaDB"){
                             sh label: '', script: '''pubIP=$(<publicip)
                             echo "$pubIP"
 						    priIP=$(<privateip)
@@ -138,7 +164,7 @@ pipeline {
                             MpriIP=$(<privateip2)
                             echo "$MpriIP"
 						    ssh -tt -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ec2-user@$pubIP /bin/bash << EOF
-						    git clone -b sourcecode https://github.com/mohamedzoheb/DrupalProject.git
+						    git clone -b sourcecode https://github.com/1996karthick/DrupalProject.git
 						    sleep 5
                             sudo /bin/su - root
                             sleep 5
@@ -156,13 +182,13 @@ pipeline {
                             '''
 		                    sh 'echo "Application Deployed, Go Ahead for VAPT,OWASP,LinkChecker,SpeedTest!!!"'
 		              }
-                      else if ("$instance" == "MultiServer_With_RDS"){
+                      else if ("$instance" == "MultiServer_with_RDS"){
                             sh label: '', script: '''pubIP=$(<publicip)
                             echo "$pubIP"
 						    endpoint=$(<endpoint)
 						    echo "$endpoint"
 						    ssh -tt -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ec2-user@$pubIP /bin/bash << EOF
-						    git clone -b sourcecode https://github.com/mohamedzoheb/DrupalProject.git
+						    git clone -b sourcecode https://github.com/1996karthick/DrupalProject.git
 						    sleep 5
                             sudo /bin/su - root
                             sleep 5
@@ -179,8 +205,13 @@ pipeline {
                             '''
 		                    sh 'echo "Application Deployed, Go Ahead for VAPT,OWASP,LinkChecker,SpeedTest!!!"'
 		              }
-                      else {
+                      else if ("$instance" == "MultiServer_with_AS_ALB"){
 		                    sh 'echo "Application Deployed, Go Ahead for VAPT,OWASP,LinkChecker,SpeedTest!!!"'
+		              
+		                    
+		                }
+					  else {
+		                    sh 'echo "Something went Wrong!!!"'
 		              }
                 }
                   }
@@ -206,9 +237,9 @@ pipeline {
                    chmod 777 $WORKSPACE/out
                    rm -f $WORKSPACE/out/*.*
                    ls -la
-                   sudo docker run --rm --network=host -v /var/lib/jenkins/workspace/DrupalMultiChoice/out:/zap/wrk/:rw -t docker.io/owasp/zap2docker-stable zap-baseline.py -t http://$pubIP/drupal/* -m 15 -d -r Drupal_Dev_ZAP_VULNERABILITY_REPORT_${BUILD_ID}.html -x Drupal_Dev_ZAP_VULNERABILITY_REPORT_${BUILD_ID}.xml || true
+                   sudo docker run --rm --network=host -v ${WORKSPACE}/out:/zap/wrk/:rw -t docker.io/owasp/zap2docker-stable zap-baseline.py -t http://$pubIP/drupal -m 15 -d -r Drupal_Dev_ZAP_VULNERABILITY_REPORT_${BUILD_ID}.html -x Drupal_Dev_ZAP_VULNERABILITY_REPORT_${BUILD_ID}.xml || true
                    '''
-                   archiveArtifacts artifacts: 'out/**/*'
+                   archiveArtifacts artifacts: 'out/'
 		    }
         } 
         stage('LinkChecker'){
@@ -216,7 +247,7 @@ pipeline {
                    sh label: '', script: '''pubIP=$(<publicip)
                    echo "$pubIP"
                    date
-                   sudo docker run --rm --network=host ktbartholomew/link-checker --concurrency 30 --threshold 0.05 http://$pubIP/drupal/* > $WORKSPACE/brokenlink_${BUILD_ID}.html || true
+                   sudo docker run --rm --network=host ktbartholomew/link-checker --concurrency 30 --threshold 0.05 http://$pubIP/drupal > $WORKSPACE/brokenlink_${BUILD_ID}.html || true
                    date
                    '''
                   archiveArtifacts artifacts: '**/brokenlink_${BUILD_ID}.html'
@@ -227,7 +258,7 @@ pipeline {
                    sh label: '', script: '''pubIP=$(<publicip)
                    echo "$pubIP"
 		           cp -r /var/lib/jenkins/speedtest/budget.json  ${WORKSPACE}
-                   sudo docker run --rm --network=host -v ${WORKSPACE}:/sitespeed.io sitespeedio/sitespeed.io http://$pubIP/drupal/* --outputFolder junitoutput --budget.configPath budget.json --budget.output junit -b chrome -n 1  || true
+                   sudo docker run --rm --network=host -v ${WORKSPACE}:/sitespeed.io sitespeedio/sitespeed.io http://$pubIP/drupal --outputFolder junitoutput --budget.configPath budget.json --budget.output junit -b chrome -n 1  || true
 		           '''
 		           archiveArtifacts artifacts: 'junitoutput/**/*'
 		  }
@@ -259,6 +290,8 @@ pipeline {
               reportFiles: 'Drupal_Dev_ZAP_VULNERABILITY_REPORT_${BUILD_ID}.html',
               reportName: 'Dev_owasp'
               ]
+        sh label: '', script: '''pubIP=$(<publicip)
+                   echo "http://$pubIP/drupal" '''
             }
         }
 }
